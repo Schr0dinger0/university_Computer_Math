@@ -34,6 +34,7 @@ RADIUS_BUFFER_FACTOR = 1.5
 MIN_AUTO_RADIUS = 500
 
 
+
 @st.cache_resource
 def get_geolocator() -> Nominatim:
     return Nominatim(user_agent="courier_route_planner")
@@ -286,11 +287,12 @@ def create_map_with_route():
     else:
         center = DEFAULT_CENTER
         zoom = DEFAULT_ZOOM
-
+    carto_key = st.secrets.get("CARTO_API_KEY")
+    carto_tile_url = f"https://basemaps.cartocdn.com/rastertiles/positron{{z}}/{{x}}/{{y}}.png?key={carto_key}"
     m = folium.Map(
         location=center,
         zoom_start=zoom,
-        tiles="CartoDB positron",
+        tiles=carto_tile_url,
         control_scale=True,
         attribution_control=False,
     )
