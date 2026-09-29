@@ -287,13 +287,13 @@ def create_map_with_route():
     else:
         center = DEFAULT_CENTER
         zoom = DEFAULT_ZOOM
-    carto_key = st.secrets.get("CARTO_API_KEY")
-    carto_tile_url = f"https://basemaps.cartocdn.com/rastertiles/positron{{z}}/{{x}}/{{y}}.png?key={carto_key}"
+    #carto_key = st.secrets.get("CARTO_API_KEY")
+    #carto_tile_url = f"https://basemaps.cartocdn.com/rastertiles/positron{{z}}/{{x}}/{{y}}.png?key={carto_key}"
     m = folium.Map(
         location=center,
         zoom_start=zoom,
-        tiles=carto_tile_url,
-        attr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        tiles="OpenStreetMap",
+        #attr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
         control_scale=True,
         attribution_control=False,
     )
