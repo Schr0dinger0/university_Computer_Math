@@ -40,31 +40,54 @@ def get_geolocator() -> Nominatim:
     return Nominatim(user_agent="koryazov.dima@gmail.com")
 
 
+import requests
+
 def search_address(query: str) -> tuple[list[dict], str | None]:
-    geolocator = get_geolocator()
+    url = "https://photon.komoot.io/api/"
+    params = {
+        "q": query,
+        "limit": SEARCH_LIMIT,
+        "lang": "ru"
+    }
+    headers = {
+        "User-Agent": "courier_route_planner_student_project"
+    }
+    
     try:
-        time.sleep(NOMINATIM_DELAY_SECONDS)
-        locations = geolocator.geocode(
-            query,
-            exactly_one=False,
-            limit=SEARCH_LIMIT,
-            country_codes=COUNTRY_CODES,
-            language="ru",
-            addressdetails=True,
-            timeout=10,
-        )
-    except (GeocoderTimedOut, GeocoderServiceError, GeocoderUnavailable) as error:
+        time.sleep(1.0)
+        response = requests.get(url, params=params, headers=headers, timeout=10)
+        if response.status_code == 429:
+            return [], "Превышен лимит запросов (ошибка 429). Попробуйте позже."
+        response.raise_for_status()
+        data = response.json()
+    except Exception as error:
         return [], str(error)
-    if not locations:
+        
+    features = data.get("features", [])
+    if not features:
         return [], None
+        
     results = []
-    for loc in locations:
+    for feat in features:
+        props = feat.get("properties", {})
+        coords = feat.get("geometry", {}).get("coordinates", [0, 0]) # у Photon формат [lon, lat]
+        
+        
+        street = props.get("street", "")
+        housenumber = props.get("housenumber", "")
+        city = props.get("city", props.get("county", ""))
+        country = props.get("country", "")
+        
+        address_parts = [p for p in [city, street, housenumber] if p]
+        full_address = ", ".join(address_parts) if address_parts else props.get("name", "Неизвестный адрес")
+        
         results.append({
-            "address": loc.address,
-            "lat": float(loc.latitude),
-            "lon": float(loc.longitude),
+            "address": f"{full_address} ({country})",
+            "lat": float(coords[1]),
+            "lon": float(coords[0]),
         })
     return results, None
+
 
 
 def haversine_distance(lat1, lon1, lat2, lon2):
