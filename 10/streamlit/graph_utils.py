@@ -10,7 +10,8 @@ from scipy.sparse.csgraph import dijkstra
 def load_graph(center_lat, center_lon, radius_meters):
     ox.settings.use_cache = True
     ox.settings.log_console = False
-
+    ox.settings.overpass_url="https://maps.mail.ru/osm/tools/overpass/api/interpreter"
+    
     G_wgs84 = ox.graph_from_point(
         (center_lat, center_lon),
         dist=radius_meters,
