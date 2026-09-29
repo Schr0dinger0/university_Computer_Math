@@ -293,6 +293,7 @@ def create_map_with_route():
         location=center,
         zoom_start=zoom,
         tiles=carto_tile_url,
+        attr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
         control_scale=True,
         attribution_control=False,
     )
