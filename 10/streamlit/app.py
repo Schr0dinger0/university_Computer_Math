@@ -41,23 +41,25 @@ def get_geolocator() -> Nominatim:
 
 
 import requests
+import time
 
 def search_address(query: str) -> tuple[list[dict], str | None]:
     url = "https://photon.komoot.io/api/"
     params = {
         "q": query,
-        "limit": SEARCH_LIMIT,
-        "lang": "ru"
+        "limit": 5,  # Замените на ваш SEARCH_LIMIT, если он задан константой
     }
     headers = {
         "User-Agent": "courier_route_planner_student_project"
     }
     
     try:
-        time.sleep(1.0)
+        time.sleep(1.0) # Небольшая пауза для безопасности
         response = requests.get(url, params=params, headers=headers, timeout=10)
+        
         if response.status_code == 429:
             return [], "Превышен лимит запросов (ошибка 429). Попробуйте позже."
+            
         response.raise_for_status()
         data = response.json()
     except Exception as error:
@@ -70,8 +72,7 @@ def search_address(query: str) -> tuple[list[dict], str | None]:
     results = []
     for feat in features:
         props = feat.get("properties", {})
-        coords = feat.get("geometry", {}).get("coordinates", [0, 0]) # у Photon формат [lon, lat]
-        
+        coords = feat.get("geometry", {}).get("coordinates", [0, 0]) # У Photon формат [lon, lat]
         
         street = props.get("street", "")
         housenumber = props.get("housenumber", "")
@@ -82,11 +83,13 @@ def search_address(query: str) -> tuple[list[dict], str | None]:
         full_address = ", ".join(address_parts) if address_parts else props.get("name", "Неизвестный адрес")
         
         results.append({
-            "address": f"{full_address} ({country})",
+            "address": f"{full_address} ({country})" if country else full_address,
             "lat": float(coords[1]),
             "lon": float(coords[0]),
         })
     return results, None
+    
+
 
 
 
