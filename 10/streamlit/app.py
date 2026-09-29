@@ -37,7 +37,7 @@ MIN_AUTO_RADIUS = 500
 
 @st.cache_resource
 def get_geolocator() -> Nominatim:
-    return Nominatim(user_agent="courier_route_planner")
+    return Nominatim(user_agent="koryazov.dima@gmail.com")
 
 
 def search_address(query: str) -> tuple[list[dict], str | None]:
